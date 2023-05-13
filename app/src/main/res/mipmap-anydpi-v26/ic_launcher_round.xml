@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2019-2023 James Clef <qwq233@qwq2333.top>
+  ~ https://github.com/KitsunePie/FuckWristPlayer
+  ~
+  ~ This software is open source software BUT IT IS NOT FREE SOFTWARE: you can redistribute it
+  ~ and/or modify it under our terms.
+  -->
+
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@drawable/ic_launcher_background" />
+    <foreground android:drawable="@drawable/ic_launcher_foreground" />
+    <monochrome android:drawable="@drawable/ic_launcher_foreground" />
+</adaptive-icon>

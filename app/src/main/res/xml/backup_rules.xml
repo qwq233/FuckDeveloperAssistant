@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (C) 2019-2023 James Clef <qwq233@qwq2333.top>
+  ~ https://github.com/KitsunePie/FuckWristPlayer
+  ~
+  ~ This software is open source software BUT IT IS NOT FREE SOFTWARE: you can redistribute it
+  ~ and/or modify it under our terms.
+  -->
+
+<!--
+   Sample backup rules file; uncomment and customize as necessary.
+   See https://developer.android.com/guide/topics/data/autobackup
+   for details.
+   Note: This file is ignored for devices older that API 31
+   See https://developer.android.com/about/versions/12/backup-restore
+-->
+<full-backup-content>
+    <!--
+   <include domain="sharedpref" path="."/>
+   <exclude domain="sharedpref" path="device.xml"/>
+-->
+</full-backup-content>
