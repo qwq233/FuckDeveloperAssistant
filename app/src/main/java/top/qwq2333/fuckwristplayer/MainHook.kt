@@ -12,16 +12,24 @@ import android.content.Context
 import android.util.Log
 import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.XC_MethodHook
+import de.robv.android.xposed.XC_MethodReplacement
 import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.XposedHelpers
 import de.robv.android.xposed.callbacks.XC_LoadPackage
+import io.luckypray.dexkit.DexKitBridge
+import io.luckypray.dexkit.enums.MatchType
+import java.io.File
+import java.lang.reflect.Method
 
 
 class MainHook : IXposedHookLoadPackage {
     lateinit var classloader: ClassLoader
+    lateinit var dexkit: DexKitBridge
+    val doExportDex = false // Debug only
 
     override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam) {
         if (lpparam.packageName != "cn.luern0313.wristvideoplayer") return
+        System.loadLibrary("dexkit")
         loge("hooked")
         XposedHelpers.findAndHookMethod("com.stub.StubApp", lpparam.classLoader, "attachBaseContext", Context::class.java, object : XC_MethodHook() {
             override fun afterHookedMethod(param: MethodHookParam) {
@@ -29,15 +37,29 @@ class MainHook : IXposedHookLoadPackage {
                 val context = param.args[0] as Context
                 classloader = context.classLoader
                 loge("getClassLoader")
-                XposedHelpers.findAndHookMethod("pc", classloader, "d", String::class.java, object : XC_MethodHook() {
-                    override fun afterHookedMethod(param: MethodHookParam) {
-                        super.afterHookedMethod(param)
-                        param.result = true
-                    }
-                })
+                dexkit = DexKitBridge.create(classloader, true)!!
+                if (doExportDex) {
+                    // export dex files
+                    val file = File("${context.filesDir.absolutePath}/dex/")
+                    loge(file.absolutePath)
+                    file.let { if (!it.exists()) it.mkdirs() }
+                    dexkit.exportDexFile(file.absolutePath)
+                }
+
+                // hook PurchaseApi
+                // http://154.8.225.108:8080/v/isCodeExist?code={deviceCode}   // http? why not https?
+                dexkit.let { bridge ->
+                    bridge.batchFindMethodsUsingStrings {
+                        addQuery("PurchaseApi", listOf("isCodeExist"))
+                        matchType = MatchType.CONTAINS
+                    }["PurchaseApi"]!!.firstOrNull()?.let {
+                        val classDescriptor = it
+                        val method: Method = classDescriptor.getMethodInstance(classloader)
+                        XposedBridge.hookMethod(method, XC_MethodReplacement.returnConstant(true))
+                    } ?: loge("Unable to find PurchaseApi.isCodeExist. Maybe the api is changed?")
+                }
             }
         })
-
     }
 
     fun loge(msg: String) {
