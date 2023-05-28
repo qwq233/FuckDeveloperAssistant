@@ -8,7 +8,9 @@
 
 package top.qwq2333.fuckwristplayer
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
 import android.util.Log
 import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.XC_MethodHook
@@ -24,20 +26,23 @@ import java.lang.reflect.Method
 
 class MainHook : IXposedHookLoadPackage {
     lateinit var classloader: ClassLoader
+    lateinit var context: Context
     lateinit var dexkit: DexKitBridge
     val doExportDex = false // Debug only
 
     override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam) {
         if (lpparam.packageName != "cn.luern0313.wristvideoplayer") return
-        System.loadLibrary("dexkit")
         loge("hooked")
         XposedHelpers.findAndHookMethod("com.stub.StubApp", lpparam.classLoader, "attachBaseContext", Context::class.java, object : XC_MethodHook() {
             override fun afterHookedMethod(param: MethodHookParam) {
                 super.afterHookedMethod(param)
-                val context = param.args[0] as Context
+                context = param.args[0] as Context
                 classloader = context.classLoader
                 loge("getClassLoader")
+
+                loadNative()
                 dexkit = DexKitBridge.create(classloader, true)!!
+
                 if (doExportDex) {
                     // export dex files
                     val file = File("${context.filesDir.absolutePath}/dex/")
@@ -71,4 +76,20 @@ class MainHook : IXposedHookLoadPackage {
             Log.e("EdXposed-Bridge", msg)
         }
     }
+
+    @SuppressLint("UnsafeDynamicallyLoadedCode")
+    @SuppressWarnings("deprecation")
+    fun loadNative() = runCatching {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N) {
+            val targetFolder = File(context.filesDir, "lib")
+            targetFolder.let { if (!it.exists()) it.mkdirs() }
+            val targetFile = File(targetFolder, "libdexkit.so")
+            this@MainHook.javaClass.classLoader!!.getResourceAsStream("lib/${Build.CPU_ABI}/libdexkit.so")!!.let {
+                targetFile.writeBytes(it.readBytes())
+            }
+            System.load(targetFile.absolutePath)
+        } else {
+            System.loadLibrary("dexkit")
+        }
+    }.getOrElse { loge(it.stackTraceToString()) }
 }
