@@ -1,6 +1,8 @@
+# Fuck Developer Assistant
 
-可以枪毙掉腕上视频付费检测的Xposed模块。
-大概仅兼容1.6.5
+
+可以枪毙掉[Developer Assistant](https://play.google.com/store/apps/details?id=com.appsisle.developerassistant)
+*(com.appsisle.developerassistant)* 付费检测的Xposed模块。
 
 懒得写README了，有需求自己编译吧
 
