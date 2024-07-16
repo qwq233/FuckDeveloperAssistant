@@ -13,5 +13,5 @@ dependencyResolutionManagement {
         maven { url 'https://api.xposed.info/' }
     }
 }
-rootProject.name = "FuckWristPlayer"
+rootProject.name = "FuckDeveloperAssistant"
 include ':app'

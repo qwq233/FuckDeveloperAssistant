@@ -8,6 +8,6 @@
 
 <resources>
     <string-array name="xposedscope" >
-        <item>cn.luern0313.wristvideoplayer</item>
+        <item>com.appsisle.developerassistant</item>
     </string-array>
 </resources>
