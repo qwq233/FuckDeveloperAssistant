@@ -1,9 +1,9 @@
 /*
  * Copyright (C) 2019-2023 James Clef <qwq233@qwq2333.top>
- * https://github.com/KitsunePie/FuckWristPlayer
+ * https://github.com/qwq233/FuckDeveloperAssistant
  *
- * This software is open source software BUT IT IS NOT FREE SOFTWARE: you can redistribute it
- * and/or modify it under our terms.
+ * This software is open source software BUT IT IS NOT FREE SOFTWARE:
+ * you can redistribute it and/or modify it under our terms.
  */
 
 package top.qwq2333.appfucker
